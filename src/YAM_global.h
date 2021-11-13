@@ -53,4 +53,6 @@ extern struct Library * PictureDTBase;
 #define STR(x)  STR2(x)
 #define STR2(x) #x
 
+#define GIT_REVSTR "walkero"
+
 #endif /* YAM_GLOBAL_H */
