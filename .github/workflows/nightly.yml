@@ -9,7 +9,7 @@ jobs:
     name: repository change check
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - id: commit-check
         run: 'echo ::set-output name=has-commits::$(git --no-pager log --pretty=oneline --since="24 hours ago" | wc -l)'
     outputs:
@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: setup dependencies
       run: |
@@ -136,42 +136,42 @@ jobs:
         max_releases: 3
 
     - name: upload AmigaOS4 files as workflow artifact [release]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-AmigaOS4.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-AmigaOS4.lha
       continue-on-error: true
 
     - name: upload AmigaOS4 files as workflow artifact [debug]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-AmigaOS4-debug.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-AmigaOS4-debug.lha
       continue-on-error: true
 
     - name: upload AmigaOS3 files as workflow artifact [release]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-AmigaOS3.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-AmigaOS3.lha
       continue-on-error: true
 
     - name: upload AmigaOS3 files as workflow artifact [debug]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-AmigaOS3-debug.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-AmigaOS3-debug.lha
       continue-on-error: true
 
     - name: upload MorphOS files as workflow artifact [release]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-MorphOS.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-MorphOS.lha
       continue-on-error: true
 
     - name: upload MorphOS files as workflow artifact [debug]
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-MorphOS-debug.lha*
         name: YAM${{ env.YAMVER }}dev-${{ env.DATE }}-${{ env.GITHUB_SHA7 }}-MorphOS-debug.lha
