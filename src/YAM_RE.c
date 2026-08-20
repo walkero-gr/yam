@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2025 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1357,7 +1357,7 @@ static BOOL RE_ScanHeader(struct Part *rp, FILE *in, FILE *out, enum ReadHeaderM
   // add the ".eml" extensions for mail attachments if it doesn't exist already
   if(rp->ContentType != NULL && stricmp(rp->ContentType, "message/rfc822") == 0)
   {
-    if(rp->Description != NULL && stricmp(&rp->Description[strlen(rp->Description)-4], ".eml") != 0)
+    if(stricmp(&rp->Description[strlen(rp->Description)-4], ".eml") != 0)
       strlcat(rp->Description, ".eml", sizeof(rp->Description));
   }
 
@@ -2301,7 +2301,7 @@ static struct Part *RE_ParseMessage(struct ReadMailData *rmData,
         if(parse_ok == TRUE)
           RE_SetPartInfo(hrp);
       }
-      else if(isAnyFlagSet(rp->rmData->parseFlags, PM_QUIET) == FALSE)
+      else if(isAnyFlagSet(rmData->parseFlags, PM_QUIET) == FALSE)
         ER_NewError(tr(MSG_ER_CantCreateTempfile));
     }
 
@@ -5004,7 +5004,7 @@ char *SuggestPartFileName(const struct Part *part)
     result = strdup(part->CParFileName);
   else if(part->CParName != NULL) // next is CParName
     result = strdup(part->CParName);
-  else if(part->Name != NULL && part->nameIsArtificial == FALSE) // next is Name if not artificial
+  else if(part->Name[0] != '\0' && part->nameIsArtificial == FALSE) // next is Name if not artificial
     result = strdup(part->Name);
   else
     result = strdup(FilePart(part->Filename));

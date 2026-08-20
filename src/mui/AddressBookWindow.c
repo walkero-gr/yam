@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2025 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -1131,9 +1131,9 @@ DECLARE(HandleDoubleClick)
         // and if so we only add the recipient by email address
         if(xget(data->recipientObject, MUIA_RecipientString_NoFullName) == TRUE)
           recipient = addr->Address;
-        else if(addr->Alias != NULL)
+        else if(addr->Alias[0] != '\0')
           recipient = addr->Alias;
-        else if(addr->RealName != NULL)
+        else if(addr->RealName[0] != '\0')
           recipient = addr->RealName;
         else
           recipient = addr->Address;

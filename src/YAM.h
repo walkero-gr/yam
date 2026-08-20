@@ -5,7 +5,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2025 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@
 #include <xpk/xpk.h>
 
 #if defined(__amigaos4__)
+#undef __amigaos4__
 #include <dos/obsolete.h>
+#define __amigaos4__
 #endif
 #if defined(__AROS__)
 #include <sys/types.h>

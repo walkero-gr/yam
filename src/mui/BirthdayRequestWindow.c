@@ -3,7 +3,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2025 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ static BOOL CheckBirthdayCheckFile(const char *alias)
   ENTER();
 
   // without a user and user name it makes no sense to search for the user
-  if((user = US_GetCurrentUser()) != NULL && (userName = user->Name) != NULL)
+  if((user = US_GetCurrentUser()) != NULL && (userName = user->Name)[0] != '\0')
   {
     FILE *fh;
     char todayDateString[64];
@@ -173,7 +173,7 @@ static void SaveBirthdayCheckFile(const char *alias)
   ENTER();
 
   // without a user and user name it makes no sense to search for the user
-  if((user = US_GetCurrentUser()) != NULL && user->Name != NULL)
+  if((user = US_GetCurrentUser()) != NULL && user->Name[0] != '\0')
   {
     char *buf;
     FILE *fh = NULL;

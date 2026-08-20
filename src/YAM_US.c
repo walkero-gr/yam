@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2025 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ static void US_SaveUsers(void)
       if(user->UseDict)
         setFlag(flags, UFLAG_USE_GLOBAL_DICTIONARY);
 
-      if(user->Name != NULL)
+      if(user->Name[0] != '\0')
         fprintf(fh, "@USER %s\n%s\n%d\n%s\n@ENDUSER\n", user->Name, user->MailDir, flags, Encrypt(user->Password));
     }
     fclose(fh);
