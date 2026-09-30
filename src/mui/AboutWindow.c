@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_Window
  Description: About window of the application
@@ -140,6 +138,7 @@ OVERLOAD(OM_NEW)
   const char aboutTemplate1[] =
                           "\033b%s\033n\n" // current developers
                           "\n"
+                          "Oliver Roberts\n"
                           "Jens Maus\n"
                           "Thore Boeckelmann";
   const char aboutTemplate2[] =
@@ -184,19 +183,19 @@ OVERLOAD(OM_NEW)
                           "\n"
                           "\033bTextEditor.mcc\033n\n"
                           "\033iTextEditor.mcc Open Source Team\033n\n"
-                          "http://sf.net/p/texteditor-mcc/\n"
+                          "https://github.com/amiga-mui/texteditor/\n"
                           "\n"
                           "\033bBetterString.mcc\033n\n"
                           "\033iBetterString.mcc Open Source Team\033n\n"
-                          "http://sf.net/p/bstring-mcc/\n"
+                          "https://github.com/amiga-mui/betterstring/\n"
                           "\n"
                           "\033bTheBar.mcc\033n\n"
                           "\033iTheBar.mcc Open Source Team\033n\n"
-                          "http://sf.net/p/thebar/\n"
+                          "https://github.com/amiga-mui/thebar/\n"
                           "\n"
                           "\033bNList MCC classes\033n\n"
                           "\033iNList Open Source Team\033n\n"
-                          "http://sf.net/p/nlist-classes/\n"
+                          "https://github.com/amiga-mui/nlist/\n"
                           "\n"
                           "\033bUrltext.mcc\033n\n"
                           "\033iAlfonso Ranieri\033n\n"
@@ -204,7 +203,7 @@ OVERLOAD(OM_NEW)
                           "\n"
                           "\033bcodesets.library\033n\n"
                           "\033icodesets.library Open Source Team\033n\n"
-                          "http://sf.net/p/codesetslib/\n"
+                          "https://github.com/jens-maus/libcodesets/\n"
                           "\n"
                           "\033bxpkmaster.library\033n\n"
                           "\033iDirk Stoecker\033n\n"
@@ -212,27 +211,27 @@ OVERLOAD(OM_NEW)
                           "\n"
                           "\033bamissl.library\033n\n"
                           "\033iAmiSSL Open Source Team\033n\n"
-                          "http://sf.net/p/amissl/\n"
+                          "https://github.com/jens-maus/amissl/\n"
                           "\n"
                           "\033bopenurl.library\033n\n"
                           "\033iOpenURL Open Source Team\033n\n"
-                          "http://sf.net/p/openurllib/\n"
+                          "https://github.com/jens-maus/libopenurl/\n"
                           "\n"
                           "\033bFlexCat\033n\n"
                           "\033iFlexCat Open Source Team\033n\n"
-                          "http://sf.net/p/flexcat/\n"
+                          "https://github.com/adtools/flexcat/\n"
                           "\n"
                           "\033bflex: The Fast Lexical Analyzer\033n\n"
                           "\033iflex Open Source Team\033n\n"
-                          "http://flex.sourceforge.net/\n"
+                          "https://github.com/westes/flex/\n"
                           "\n"
                           "\033bexpat XML Parser library\033n\n"
                           "\033iexpat Open Source Team\033n\n"
-                          "http://expat.sourceforge.net/\n"
+                          "https://libexpat.github.io/\n"
                           "\n"
                           "\033bTime Zone Database\033n\n"
                           "\033iInternet Assigned Numbers Authority (IANA)\033n\n"
-                          "http://www.iana.org/time-zones\n"
+                          "https://www.iana.org/time-zones\n"
                           "\n"
                           "\033bPretty Good Privacy (PGP)\033n\n"
                           "\033iPhil Zimmermann\033n\n"

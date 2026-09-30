@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_NList
  Description: NList class to display all Signatures
 
 ***************************************************************************/
+
+#include <string.h>
 
 #include "SignatureList_cl.h"
 
@@ -77,8 +77,9 @@ OVERLOAD(MUIM_NList_Display)
   {
     GETDATA;
 
-    snprintf(data->displayBuffer, sizeof(data->displayBuffer), "%s%s" MUIX_N, sn->active == FALSE ? MUIX_I : "",
-                                                                              sn->description);
+    strlcpy(data->displayBuffer, sn->active == FALSE ? MUIX_I : "", sizeof(data->displayBuffer));
+    strlcat(data->displayBuffer, sn->description, sizeof(data->displayBuffer) - strlen(MUIX_N));
+    strlcat(data->displayBuffer, MUIX_N, sizeof(data->displayBuffer));
 
     ndm->strings[0] = data->displayBuffer;
   }

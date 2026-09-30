@@ -5,7 +5,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -34,9 +32,9 @@
 // forward declarations
 struct Connection;
 
-// make sure to open at least 5.1 of amisslmaster.library
+// make sure to open at least 5.20 of amisslmaster.library
 #define AMISSLMASTER_VERSION  5
-#define AMISSLMASTER_REVISION 1
+#define AMISSLMASTER_REVISION 20
 
 // AmiSSL/OpenSSL minimum version to use
 #define AMISSL_VERSION AMISSL_CURRENT_VERSION
@@ -59,14 +57,14 @@ struct Certificate
 {
   struct Certificate *issuer; // links to the certificate of the issuer or NULL if top level
 
-  X509_NAME *subject_dn;
-  X509_NAME *issuer_dn;
-  X509      *subject;
-  char      *identity;
-  char      fingerprint[SSL_DIGESTLEN];
-  char      *issuerStr;
-  char      notBefore[SIZE_DEFAULT];
-  char      notAfter[SIZE_DEFAULT];
+  const X509_NAME *subject_dn;
+  const X509_NAME *issuer_dn;
+  X509            *subject;
+  char            *identity;
+  char             fingerprint[SSL_DIGESTLEN];
+  char            *issuerStr;
+  char             notBefore[SIZE_DEFAULT];
+  char             notAfter[SIZE_DEFAULT];
 };
 
 // public functions

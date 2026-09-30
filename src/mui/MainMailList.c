@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_NList
  Description: NList class of the main mail list in the main window
@@ -492,10 +490,18 @@ OVERLOAD(MUIM_NList_Display)
         // lets put the string together
         if(IsStrEmpty(addr) == FALSE)
         {
-          snprintf(data->fromBuffer, sizeof(data->fromBuffer), "%s%s%s%s", isMultiRCPTMail(mail) ? SI_STR(SI_GROUP) : "",
-                                                         toPrefix ? tr(MSG_MA_ToPrefix) : "",
-                                                         addr,
-                                                         isMultiSenderMail(mail) && toPrefix == FALSE ? ", ..." : "");
+          data->fromBuffer[0] = '\0';
+
+          if(isMultiRCPTMail(mail))
+            strlcat(data->fromBuffer, SI_STR(SI_GROUP), sizeof(data->fromBuffer));
+
+          if(toPrefix)
+            strlcat(data->fromBuffer, tr(MSG_MA_ToPrefix), sizeof(data->fromBuffer));
+
+          strlcat(data->fromBuffer, addr, sizeof(data->fromBuffer));
+
+          if(isMultiSenderMail(mail) && toPrefix == FALSE)
+            strlcat(data->fromBuffer, ", ...", sizeof(data->fromBuffer));
 
           ndm->strings[1] = data->fromBuffer;
         }
@@ -508,7 +514,8 @@ OVERLOAD(MUIM_NList_Display)
       {
         if(isMultiReplyToMail(mail))
         {
-          snprintf(data->replytoBuffer, sizeof(data->replytoBuffer), "%s, ...", AddrName(mail->ReplyTo));
+          strlcpy(data->replytoBuffer, AddrName(mail->ReplyTo), sizeof(data->replytoBuffer));
+          strlcat(data->replytoBuffer, ", ...", sizeof(data->replytoBuffer));
           ndm->strings[2] = data->replytoBuffer;
         }
         else

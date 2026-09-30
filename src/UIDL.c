@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -30,12 +28,10 @@
 #include <string.h>
 
 #include <proto/dos.h>
-#if defined(__amigaos4__)
-#include <dos/obsolete.h>
-#endif
 
 #include "extrasrc.h"
 
+#include "YAM.h"
 #include "YAM_stringsizes.h"
 #include "YAM_utilities.h"
 
@@ -56,7 +52,7 @@ static void BuildUIDLFilename(const struct MailServerNode *msn, char *uidlPath, 
     char *uidlName;
 
     // create a file name using the mail server's unique ID
-    if(asprintf(&uidlName, ".uidl_%08lx", msn->id) != -1)
+    if(asprintf(&uidlName, ".uidl_%08x", msn->id) != -1)
     {
       CreateFilename(uidlName, uidlPath, uidlPathSize);
 

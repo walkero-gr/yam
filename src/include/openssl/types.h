@@ -1,11 +1,11 @@
 /*
  * Copyright (c) 1999-2006 Andrija Antonijevic, Stefan Burstroem.
- * Copyright (c) 2014-2022 AmiSSL Open Source Team.
+ * Copyright (c) 2014-2025 AmiSSL Open Source Team.
  * All Rights Reserved.
  *
  * This file has been modified for use with AmiSSL for AmigaOS-based systems.
  *
- * Copyright 2001-2021 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2001-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -17,11 +17,21 @@
 # include <proto/amissl.h>
 #endif
 
+/*
+ * Unfortunate workaround to avoid symbol conflict with wincrypt.h
+ * See https://github.com/openssl/openssl/issues/9981
+ */
+#ifdef _WIN32
+# define WINCRYPT_USE_SYMBOL_PREFIX
+# undef X509_NAME
+# undef X509_EXTENSIONS
+# undef PKCS7_SIGNER_INFO
+# undef OCSP_REQUEST
+# undef OCSP_RESPONSE
+#endif
+
 #ifndef OPENSSL_TYPES_H
 # define OPENSSL_TYPES_H
-# if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 3))
-#  pragma once
-# endif
 
 # include <limits.h>
 
@@ -32,6 +42,12 @@ extern "C" {
 # include <openssl/e_os2.h>
 # include <openssl/safestack.h>
 # include <openssl/macros.h>
+
+# if OPENSSL_VERSION_MAJOR >= 4
+#  define OSSL_FUTURE_CONST const
+# else
+#  define OSSL_FUTURE_CONST
+# endif
 
 typedef struct ossl_provider_st OSSL_PROVIDER; /* Provider Object */
 
@@ -82,15 +98,6 @@ typedef struct ASN1_ITEM_st ASN1_ITEM;
 typedef struct asn1_pctx_st ASN1_PCTX;
 typedef struct asn1_sctx_st ASN1_SCTX;
 
-# ifdef _WIN32
-#  undef X509_NAME
-#  undef X509_EXTENSIONS
-#  undef PKCS7_ISSUER_AND_SERIAL
-#  undef PKCS7_SIGNER_INFO
-#  undef OCSP_REQUEST
-#  undef OCSP_RESPONSE
-# endif
-
 # ifdef BIGNUM
 #  undef BIGNUM
 # endif
@@ -117,6 +124,7 @@ typedef struct evp_md_ctx_st EVP_MD_CTX;
 typedef struct evp_mac_st EVP_MAC;
 typedef struct evp_mac_ctx_st EVP_MAC_CTX;
 typedef struct evp_pkey_st EVP_PKEY;
+typedef struct evp_skey_st EVP_SKEY;
 
 typedef struct evp_pkey_asn1_method_st EVP_PKEY_ASN1_METHOD;
 
@@ -134,6 +142,8 @@ typedef struct evp_rand_ctx_st EVP_RAND_CTX;
 typedef struct evp_keyexch_st EVP_KEYEXCH;
 
 typedef struct evp_signature_st EVP_SIGNATURE;
+
+typedef struct evp_skeymgmt_st EVP_SKEYMGMT;
 
 typedef struct evp_asym_cipher_st EVP_ASYM_CIPHER;
 

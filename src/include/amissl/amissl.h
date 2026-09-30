@@ -47,6 +47,7 @@
 #endif
 #include <openssl/bn.h>
 #include <openssl/buffer.h>
+#include <openssl/byteorder.h>
 #ifndef OPENSSL_NO_CAMELLIA
 #include <openssl/camellia.h>
 #endif
@@ -95,10 +96,12 @@
 #ifndef OPENSSL_NO_HMAC
 #include <openssl/hmac.h>
 #endif
+#include <openssl/hpke.h>
 #include <openssl/http.h>
 #ifndef OPENSSL_NO_IDEA
 #include <openssl/idea.h>
 #endif
+#include <openssl/indicator.h>
 #include <openssl/kdf.h>
 #include <openssl/lhash.h>
 #ifndef OPENSSL_NO_MD2
@@ -113,6 +116,7 @@
 #ifndef OPENSSL_NO_MDC2
 #include <openssl/mdc2.h>
 #endif
+#include <openssl/ml_kem.h>
 #include <openssl/modes.h>
 #include <openssl/obj_mac.h>
 #include <openssl/objects.h>
@@ -125,6 +129,7 @@
 #include <openssl/params.h>
 #include <openssl/param_build.h>
 #include <openssl/provider.h>
+#include <openssl/quic.h>
 #include <openssl/rand.h>
 #ifndef OPENSSL_NO_RC2
 #include <openssl/rc2.h>
@@ -159,6 +164,7 @@
 #include <openssl/stack.h>
 #include <openssl/store.h>
 #include <openssl/symhacks.h>
+#include <openssl/thread.h>
 #include <openssl/tls1.h>
 #include <openssl/trace.h>
 #ifndef OPENSSL_NO_TS
@@ -171,6 +177,7 @@
 #include <openssl/whrlpool.h>
 #endif
 #include <openssl/x509.h>
+#include <openssl/x509_acert.h>
 #include <openssl/x509_vfy.h>
 #include <openssl/x509v3.h>
 

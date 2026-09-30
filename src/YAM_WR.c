@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch/
- YAM Open Source project   :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM Open Source project   :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -1213,7 +1211,7 @@ BOOL WriteOutMessage(struct Compose *comp)
   struct TempFile *tf=NULL;
   FILE *fh = comp->FH;
   struct WritePart *firstpart = comp->FirstPart;
-  char buf[SIZE_DEFAULT];
+  char buf[SIZE_DEFAULT*2];
   char msgID[SIZE_MSGID];
   char address[SIZE_LARGE];
 
@@ -2353,7 +2351,7 @@ struct WriteMailData *NewForwardMailWindow(struct MailList *mlist, const int fla
         // we create a generic subject line for the forward
         // action so that a forwarded mail will have a "Fwd: XXX" kinda
         // subject line instead of the original.
-        if(mail->Subject != '\0')
+        if(mail->Subject[0] != '\0')
         {
           char buffer[SIZE_LARGE];
 
@@ -2960,7 +2958,7 @@ struct WriteMailData *NewReplyMailWindow(struct MailList *mlist, const int flags
                       rcc = AppendRcpt(rcc, &email->SFrom[k], email->identity, FALSE);
                     }
                   }
-                  // continue
+                  // fall through
 
                   // Reply-To:/Mail-Reply-To: addresses
                   case 2:
@@ -3558,7 +3556,8 @@ static void AddTagline(FILE *fh_mail)
     BOOL createHashFile;
     FILE *fh_tag;
 
-    snprintf(hashfile, sizeof(hashfile), "%s.hsh", C->TagsFile);
+    strlcpy(hashfile, C->TagsFile, sizeof(hashfile)-4);
+    strlcat(hashfile, ".hsh", sizeof(hashfile));
 
     if(FileExists(hashfile) == FALSE)
     {

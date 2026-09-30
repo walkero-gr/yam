@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -1169,7 +1167,7 @@ void QuoteText(FILE *out, const char *src, const int len, const int line_max)
         }
 
         // lets check the indention of the next line
-        if((indent = strchr(src, '\n')) && ++indent != '\0')
+        if((indent = strchr(src, '\n')) && *(++indent) != '\0')
         {
           int pre_spaces;
 
@@ -4105,7 +4103,7 @@ int TransferMailFile(BOOL copyit, struct Mail *mail, struct Folder *dstfolder)
 BOOL RepackMailFile(struct Mail *mail, enum FolderMode dstMode, const char *passwd)
 {
   char *pmeth = NULL;
-  char srcbuf[SIZE_PATHFILE];
+  char srcbuf[SIZE_PATHFILE - 4];
   char dstbuf[SIZE_PATHFILE];
   struct Folder *folder;
   int peff = 0;
@@ -4634,7 +4632,7 @@ void SaveLayout(BOOL permanent)
     (int)G->Weights[10],
     (int)G->Weights[11],
     G->preselectionListLayout,
-    G->quickSearchViewOptions) != -1)
+    (int)G->quickSearchViewOptions) != -1)
   {
     setstring(G->MA->GUI.ST_LAYOUT, buf);
 
@@ -6691,7 +6689,7 @@ static BOOL ParseDateString(const char *string, const char *fmt, struct TM *res)
           {
             setFlag(flags, FLG_4DIGIT_YEAR);
           }
-          // we fall through here
+          // fall through
 
           case 'y': // %y  - year using two digits with leading zeros (00-99)
           {

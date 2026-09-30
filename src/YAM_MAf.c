@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -134,6 +132,7 @@ struct ComprMail
   // without bumping the index because the routines in LoadIndex() take care
   // of that.
 
+  #define SIZE_MOREBYTES (SIZE_SUBJECT + ((SIZE_ADDRESS + SIZE_REALNAME) * 3) + SIZE_DEFAULT + 1)
   #define COMPRMAIL_MORELINES 8
 };
 
@@ -327,7 +326,7 @@ enum LoadedMode MA_LoadIndex(struct Folder *folder, BOOL full)
             {
               struct Mail *mail;
               struct ComprMail cmail;
-              char utf8buf[SIZE_LARGE];
+              char utf8buf[SIZE_MOREBYTES * 2];
               char *buf;
               char *line;
               char *nextLine;
@@ -368,9 +367,9 @@ enum LoadedMode MA_LoadIndex(struct Folder *folder, BOOL full)
               {
                 // no conversion required
                 buf = utf8buf;
-			  }
-			  else
-			  {
+              }
+              else
+              {
                 // convert the utf8 encoded buffer to the local charset
                 if((buf = CodesetsUTF8ToStr(CSA_Source,          utf8buf,
                                             CSA_SourceLen,       cmail.moreBytes,
@@ -589,7 +588,7 @@ BOOL MA_SaveIndex(struct Folder *folder)
       {
         struct Mail *mail = mnode->mail;
         struct ComprMail cmail;
-        char buf[SIZE_LARGE];
+        char buf[SIZE_MOREBYTES];
         UTF8 *utf8buf;
 
         // create the moreBytes string we append at the end
@@ -603,10 +602,11 @@ BOOL MA_SaveIndex(struct Folder *folder)
         if(systemIsUTF8 == TRUE)
         {
           // no conversion required;
+          cmail.moreBytes = strlen(buf);
           utf8buf = (UTF8 *)buf;
-		}
-		else
-		{
+        }
+        else
+        {
           // convert the buffer string to UTF8
           // the length of the generated string is directly put into the moreBytes variable
           utf8buf = CodesetsUTF8Create(CSA_Source, buf,
@@ -1966,7 +1966,7 @@ static BOOL MA_ScanDate(struct Mail *mail, const char *date)
   BOOL success = FALSE;
   int count = 0;
   int day = 0;
-  int mon = 0;
+  unsigned int mon = 0;
   int year = 0;
   int hour = 0;
   int min = 0;

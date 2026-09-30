@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site : http://www.yam.ch
- YAM OpenSource project    : http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    : https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_Application
  Description: Application subclass handles all "global" stuff.
@@ -587,8 +585,8 @@ OVERLOAD(OM_NEW)
 
     // now we add the compiler information as YAM can be
     // compiled with different versions and types of compilers
-    snprintf(data->compileInfo, sizeof(data->compileInfo), "%s (%s, " GIT_REVSTR ")", data->compileInfo,
-                                                                                      yamcompiler);
+    snprintf(data->compileInfo + strlen(data->compileInfo), sizeof(data->compileInfo) - strlen(data->compileInfo),
+             " (%s, " GIT_REVSTR ")", yamcompiler);
 
     data->emailCacheName = (STRPTR)EMAILCACHENAME;
     while((tag = NextTagItem((APTR)&tags)) != NULL)
@@ -1062,7 +1060,7 @@ DECLARE(StartMacro) // enum Macro num, const char *param
         // strings via the new RXFF_SCRIPT flag
         if(LIB_VERSION_IS_AT_LEAST(RexxSysBase, 45, 0) == TRUE && MyStrChr(scname, ' ') != NULL)
         {
-          char command[SIZE_COMMAND];
+          char command[SIZE_COMMAND + 2];
 
           snprintf(command, sizeof(command), "\"%s\"", scname);
           if(SendRexxCommand(G->RexxHost, command, 0) != NULL)

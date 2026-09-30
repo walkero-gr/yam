@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_Window
  Description: Folder edit window
@@ -432,9 +430,11 @@ static BOOL SaveNewFolder(struct IClass *cl, Object *obj)
       // check if the combined full path already exists
       if(FileExists(folder.Fullpath) == TRUE)
       {
-        MUI_Request(_app(obj), obj, MUIF_NONE, NULL, tr(MSG_YesNoReq), tr(MSG_FO_FOLDER_ALREADY_EXISTS), folder.Fullpath);
-        set(obj, MUIA_Window_ActiveObject, data->ST_FPATH);
-        break;
+        if(MUI_Request(_app(obj), obj, MUIF_NONE, NULL, tr(MSG_YesNoReq), tr(MSG_FO_FOLDER_ALREADY_EXISTS), folder.Fullpath) == 0)
+        {
+          set(obj, MUIA_Window_ActiveObject, data->ST_FPATH);
+          break;
+        }
       }
 
       if(folder.MLSupport == TRUE)

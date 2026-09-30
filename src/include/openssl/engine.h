@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1999-2006 Andrija Antonijevic, Stefan Burstroem.
- * Copyright (c) 2014-2022 AmiSSL Open Source Team.
+ * Copyright (c) 2014-2025 AmiSSL Open Source Team.
  * All Rights Reserved.
  *
  * This file has been modified for use with AmiSSL for AmigaOS-based systems.
@@ -100,7 +100,7 @@ extern "C" {
 #  define ENGINE_FLAGS_BY_ID_COPY         (int)0x0004
 
 /*
- * This flag if for an ENGINE that does not want its methods registered as
+ * This flag is for an ENGINE that does not want its methods registered as
  * part of ENGINE_register_all_complete() for example if the methods are not
  * usable as default methods.
  */
@@ -624,7 +624,7 @@ OSSL_DEPRECATEDIN_3_0 int ENGINE_get_flags(const ENGINE *e);
  */
 
 /*
- * Initialise a engine type for use (or up its reference count if it's
+ * Initialise an engine type for use (or up its reference count if it's
  * already in use). This will fail if the engine is not currently operational
  * and cannot initialise.
  */
@@ -632,7 +632,7 @@ OSSL_DEPRECATEDIN_3_0 int ENGINE_get_flags(const ENGINE *e);
 OSSL_DEPRECATEDIN_3_0 int ENGINE_init(ENGINE *e);
 #  endif
 /*
- * Free a functional reference to a engine type. This does not require a
+ * Free a functional reference to an engine type. This does not require a
  * corresponding call to ENGINE_free as it also releases a structural
  * reference.
  */

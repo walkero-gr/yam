@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -1332,7 +1330,8 @@ void MA_RemoveAttach(struct Mail *mail, struct Part **whichParts, BOOL warning)
       char tfname[SIZE_PATHFILE];
 
       GetMailFile(fname, sizeof(fname), NULL, mail);
-      snprintf(tfname, sizeof(tfname), "%s.tmp", fname);
+      strlcpy(tfname, fname, sizeof(tfname) - 4);
+      strlcat(tfname, ".tmp", sizeof(tfname));
 
       if((cmsg = RE_ReadInMessage(rmData, RIM_QUIET)) != NULL)
       {
@@ -2295,7 +2294,11 @@ void MA_GetAddress(struct MailList *mlist, struct MUI_NListtree_TreeNode *dropTa
     // if there is a "," in the realname of the new address
     // we have to encapsulate it in quotes
     if(strchr(pe->RealName, ','))
-      snprintf(abn.RealName, sizeof(abn.RealName), "\"%s\"", pe->RealName);
+    {
+      char name[SIZE_REALNAME - 2];
+      strlcpy(name, pe->RealName, sizeof(name));
+      snprintf(abn.RealName, sizeof(abn.RealName), "\"%s\"", name);
+    }
     else
       strlcpy(abn.RealName, pe->RealName, sizeof(abn.RealName));
 
@@ -2865,7 +2868,8 @@ BOOL MA_ExportMessages(char *filename, const BOOL all, ULONG flags)
           // as filename and append ".eml"
           struct MailNode *mnode = FirstMailNode(mlist);
 
-          snprintf(suggestedName, sizeof(suggestedName), "%s.eml", mnode->mail->Subject);
+          strlcpy(suggestedName, mnode->mail->Subject, sizeof(suggestedName) - 4);
+          strlcat(suggestedName, ".eml", sizeof(suggestedName));
         }
         else
         {

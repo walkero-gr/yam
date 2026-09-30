@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
  Superclass:  MUIC_NListtree
  Description: NListtree class for displaying a folder listtree
@@ -76,6 +74,7 @@ static void FormatFolderInfo(char *folderStr, const size_t maxLen,
                              const struct Folder *folder, const struct MUI_NListtree_TreeNode *treeNode)
 {
   int imageIndex = -1;
+  int len;
 
   ENTER();
 
@@ -93,13 +92,13 @@ static void FormatFolderInfo(char *folderStr, const size_t maxLen,
     imageIndex = folder->ImageIndex >= 0 ? folder->ImageIndex : FI_FOLD;
   }
 
-  snprintf(folderStr, maxLen, "\033o[%d]", imageIndex);
+  len = snprintf(folderStr, maxLen, "\033o[%d]", imageIndex);
 
   // include the folder name/path
   if(folder->Name[0] != '\0')
     strlcat(folderStr, folder->Name, maxLen);
   else
-    snprintf(folderStr, maxLen, "%s[%s]", folderStr, folder->Path);
+    snprintf(folderStr + len, maxLen - len, "[%s]", folder->Path);
 
   // append the numbers if this is an close folder group or a folder with a valid index
   if((folder->Type == FT_GROUP && isFlagClear(treeNode->tn_Flags, TNF_OPEN)) ||
@@ -412,7 +411,10 @@ OVERLOAD(MUIM_NListtree_Display)
             ndm->Preparse[0] = (char *)MUIX_I;
 
           if(isProtectedFolder(entry))
-            snprintf(data->folderStr, sizeof(data->folderStr), "%s \033o[%d]", data->folderStr, FI_PROTECTED);
+          {
+            int len = strlen(data->folderStr);
+            snprintf(data->folderStr + len, sizeof(data->folderStr) - len, " \033o[%d]", FI_PROTECTED);
+          }
         }
       }
     }

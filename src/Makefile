@@ -2,7 +2,7 @@
 #
 # YAM - Yet Another Mailer
 # Copyright (C) 1995-2000 Marcel Beck
-# Copyright (C) 2000-2022 YAM Open Source Team
+# Copyright (C) 2000-2025 YAM Open Source Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # YAM Official Support Site :  http://www.yam.ch
-# YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-#
-# $Id$
+# YAM OpenSource project    :  https://github.com/jens-maus/yam/
 #
 #***************************************************************************/
 
@@ -141,7 +139,7 @@ ifneq ($(HOST), AmigaOS4)
   # this is either a cross-compiler build on a UNIX-like system or
   # on MorphOS, so lets use expr/gdate instead of the above ARexx stuff
   DEVFLAGS = -DDEVWARNING #-DEXPDATE="$(shell $(EXPR) `$(DATE) +%s` / 86400 - 2922 + 35)"
-  YAMVERID = -D__YAM_VERDATE=\"$(shell $(DATE) +%d.%m.%Y)\" \
+  YAMVERID = -D__YAM_VERDATE=\"$(shell $(DATE) +%-d.%-m.%-Y)\" \
              -D__YAM_VERDAYS="$(shell $(EXPR) `$(DATE) +%s` / 86400 - 2922)" \
              -D__YAM_BUILDDATE=\"$(shell $(DATE) +%Y%m%d)\" \
              -D__YAM_BUILDID="$(BUILDID)"
@@ -209,7 +207,7 @@ ifeq ($(OS), os4)
   # Compiler/link/strip commands
   ifneq ($(HOST), AmigaOS4)
     CC      = ppc-amigaos-gcc
-    STRIP   = ppc-amigaos-strip
+    STRIP   = ppc-amigaos-strip --strip-unneeded-rel-relocs
     OBJDUMP = ppc-amigaos-objdump
   endif
 
@@ -800,7 +798,7 @@ $(TARGET): $(addprefix $(OBJDIR)/,$(OBJS)) $(LIB)/libtz.a
 	@echo "  LD $@.debug"
 	@$(CC) $(LDFLAGS) -o $@.debug $(addprefix $(OBJDIR)/,$(OBJS)) $(LDLIBS) -Wl,--cref,-M,-Map=$@.map
 	@echo "  LD $@"
-	@$(STRIP) --preserve-dates -R.comment -R.sdata2 -S -o $@ $@.debug
+	@$(STRIP) --preserve-dates -R.comment -R.sdata2 -o $@ $@.debug
 	@$(CHMOD) $@
 
 # for creating a .dump file

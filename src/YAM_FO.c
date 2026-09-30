@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -944,15 +942,16 @@ enum LoadTreeResult FO_LoadTree(void)
                     {
                       char path[SIZE_PATH];
                       ULONG count;
+                      int len;
 
                       // create a new folder directory name by appending a unique number
                       D(DBF_FOLDER, "directory '%s' already exists, creating new unique path", fo->Fullpath);
-                      strlcpy(path, fo->Fullpath, sizeof(path));
+                      len = strlcpy(path, fo->Fullpath, sizeof(path));
                       count = 0;
                       do
                       {
                         count++;
-                        snprintf(fo->Fullpath, sizeof(fo->Fullpath), "%s_%ld", path, count);
+                        len += snprintf(fo->Fullpath + len, sizeof(fo->Fullpath) - len, "_%d", (int)count);
                       }
                       while(FileExists(fo->Fullpath) == TRUE);
                     }

@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2026 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -367,24 +365,23 @@ static int CheckCertificateIdentity(const char *hostname, X509 *cert, char **ide
         case GEN_IPADD:
         {
           char ipaddr[60];
+          const unsigned char *ip = ASN1_STRING_get0_data(nm->d.iPAddress);
+          int length = ASN1_STRING_length(nm->d.iPAddress);
 
-          if(nm->d.iPAddress->length == 4) // IPv4 address
+          if(length == 4) // IPv4 address
           {
-            snprintf(ipaddr, sizeof(ipaddr), "%d.%d.%d.%d", nm->d.iPAddress->data[0],
-                     nm->d.iPAddress->data[1],
-                     nm->d.iPAddress->data[2],
-                     nm->d.iPAddress->data[3]);
+            snprintf(ipaddr, sizeof(ipaddr), "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
           }
-          else if((nm->d.iPAddress->length == 16) || // IPv6 address
-                  (nm->d.iPAddress->length == 20))
+          else if((length == 16) || // IPv6 address
+                  (length == 20))
           {
             char *pos = ipaddr;
             int j;
             #define VAL2HEX(s)  ((s) + (((s) >= 10) ? ('a'-10) : '0'))
 
-            for(j = 0; j < nm->d.iPAddress->length; ++j)
+            for(j = 0; j < length; ++j)
             {
-              *pos++ = VAL2HEX(nm->d.iPAddress->data[j]);
+              *pos++ = VAL2HEX(ip[j]);
               *pos++ = ':';
             }
             *pos = '\0';
@@ -416,7 +413,7 @@ static int CheckCertificateIdentity(const char *hostname, X509 *cert, char **ide
   // as per RFC3280.
   if(found == 0)
   {
-    X509_NAME *subj = X509_get_subject_name(cert);
+    const X509_NAME *subj = X509_get_subject_name(cert);
     int idx = -1;
     int lastidx;
     char *cname = NULL;
@@ -508,8 +505,8 @@ static char *ExtractReadableDN(const X509_NAME *dname)
 
   for(n = X509_NAME_entry_count(dname); n > 0; n--)
   {
-    X509_NAME_ENTRY *ent = X509_NAME_get_entry(dname, n-1);
-    ASN1_OBJECT *obj = X509_NAME_ENTRY_get_object(ent);
+    const X509_NAME_ENTRY *ent = X509_NAME_get_entry(dname, n-1);
+    const ASN1_OBJECT *obj = X509_NAME_ENTRY_get_object(ent);
 
     // Skip commonName or emailAddress except if there is no other
     // attribute in dname.
@@ -536,28 +533,29 @@ static BOOL ASN1Time2TimeVal(const ASN1_TIME *atm, struct TimeVal *tv)
 
   ENTER();
 
-  if(atm->length >= 12)
+  if(ASN1_STRING_length(atm) >= 12)
   {
     char datestring[] = "MM-DD-YY HH:MM:SS";
+    const unsigned char *data = ASN1_STRING_get0_data(atm);
 
     // month
-    datestring[0]  = atm->data[2];
-    datestring[1]  = atm->data[3];
+    datestring[0]  = data[2];
+    datestring[1]  = data[3];
     // day
-    datestring[3]  = atm->data[4];
-    datestring[4]  = atm->data[5];
+    datestring[3]  = data[4];
+    datestring[4]  = data[5];
     // year
-    datestring[6]  = atm->data[0];
-    datestring[7]  = atm->data[1];
+    datestring[6]  = data[0];
+    datestring[7]  = data[1];
     // hour
-    datestring[9]  = atm->data[6];
-    datestring[10] = atm->data[7];
+    datestring[9]  = data[6];
+    datestring[10] = data[7];
     // minute
-    datestring[12] = atm->data[8];
-    datestring[13] = atm->data[9];
+    datestring[12] = data[8];
+    datestring[13] = data[9];
     // second
-    datestring[15] = atm->data[10];
-    datestring[16] = atm->data[11];
+    datestring[15] = data[10];
+    datestring[16] = data[11];
 
     // now convert the temporary string to a TimeVal
     result = String2TimeVal(tv, datestring, DSS_USDATETIME, TZC_NONE);
@@ -598,9 +596,9 @@ static struct Certificate *MakeCertificateChain(STACK_OF(X509) *chain)
     CheckCertificateIdentity(NULL, x5, &cert->identity);
     GetCertFingerprint(cert, cert->fingerprint);
     cert->issuerStr = ExtractReadableDN(cert->issuer_dn);
-    if(ASN1Time2TimeVal(X509_get_notBefore(cert->subject), &tv))
+    if(ASN1Time2TimeVal(X509_get0_notBefore(cert->subject), &tv))
       TimeVal2String(cert->notBefore, sizeof(cert->notBefore), &tv, DSS_DATETIME, TZC_NONE);
-    if(ASN1Time2TimeVal(X509_get_notAfter(cert->subject), &tv))
+    if(ASN1Time2TimeVal(X509_get0_notAfter(cert->subject), &tv))
       TimeVal2String(cert->notAfter, sizeof(cert->notAfter), &tv, DSS_DATETIME, TZC_NONE);
 
     // now link the certificate to the issuer
@@ -756,11 +754,10 @@ BOOL MakeSecureConnection(struct Connection *conn)
       }
       else
       {
-        // 2) check if we have enough entropy
-        if((rc = RAND_status()) == 0) // rc=0 is error
-          E(DBF_NET, "not enough entropy in the SSL pool");
-        // 3) check if we are ready for creating the ssl connection
-        else if((conn->ssl = SSL_new(G->sslCtx)) == NULL)
+        conn->amisslInitialized = TRUE;
+
+        // 2) check if we are ready for creating the ssl connection
+        if((conn->ssl = SSL_new(G->sslCtx)) == NULL)
           E(DBF_NET, "can't create a new SSL structure for a connection");
         else if(SSL_set_ex_data(conn->ssl, G->sslDataIndex, conn) == 0)
           E(DBF_NET, "couldn't assign connection pointer");
@@ -785,7 +782,7 @@ BOOL MakeSecureConnection(struct Connection *conn)
           }
           #endif
 
-          // 4) set the socket descriptor to the ssl context
+          // 3) set the socket descriptor to the ssl context
           D(DBF_NET, "set socket descriptor %ld for context %08lx", conn->socket, conn->ssl);
           if(SSL_set_fd(conn->ssl, (int)conn->socket) != 1)
             E(DBF_NET, "SSL_set_fd() error, socket %ld", conn->socket);
@@ -794,7 +791,9 @@ BOOL MakeSecureConnection(struct Connection *conn)
             BOOL errorState = FALSE;
             int res;
 
-            // 5) establish the ssl connection and take care of non-blocking IO
+            SSL_set_tlsext_host_name(conn->ssl, conn->server->hostname);
+
+            // 4) establish the ssl connection and take care of non-blocking IO
             D(DBF_NET, "connect SSL context %08lx", conn->ssl);
             STARTCLOCK(DBF_NET);
             while(errorState == FALSE && (res = SSL_connect(conn->ssl)) <= 0)
@@ -808,8 +807,8 @@ BOOL MakeSecureConnection(struct Connection *conn)
               #if defined(DEBUG)
               STOPCLOCK(DBF_NET, "SSL_connect()");
               sslSession = SSL_get_session(conn->ssl);
-              D(DBF_NET, "SSL session timeout: %ld s", SSL_get_timeout(sslSession));
-              D(DBF_NET, "SSL session times: %ld (%ld)", SSL_get_time(sslSession), time(NULL));
+              D(DBF_NET, "SSL session timeout: %ld s", SSL_SESSION_get_timeout(sslSession));
+              D(DBF_NET, "SSL session times: %ld (%ld)", SSL_SESSION_get_time_ex(sslSession), time(NULL));
               #endif
 
               // get the reason why SSL_connect() returned an error
@@ -928,7 +927,7 @@ BOOL MakeSecureConnection(struct Connection *conn)
             {
               STACK_OF(X509) *chain;
 
-              // 6) now we get the peer certificate chain
+              // 5) now we get the peer certificate chain
               D(DBF_NET, "get peer certificate chain");
               chain = SSL_get_peer_cert_chain(conn->ssl);
               if(chain == NULL || sk_X509_num(chain) == 0)
@@ -937,11 +936,11 @@ BOOL MakeSecureConnection(struct Connection *conn)
               {
                 struct Certificate *cert;
 
-                // 7) make a local copy of the certificate chain so that
+                // 6) make a local copy of the certificate chain so that
                 //     we can bug the user with information on accepting/rejecting the certificate
                 cert = MakeCertificateChain(chain);
 
-                // 8) now check the certificate chain for any errors and ask the user
+                // 7) now check the certificate chain for any errors and ask the user
                 //     how to proceed in case there were an certificate error found
                 if(CheckCertificate(conn, cert) != 0)
                   E(DBF_NET, "SSL certificate checks failed");
@@ -1005,19 +1004,16 @@ BOOL MakeSecureConnection(struct Connection *conn)
       }
     }
     else
-      W(DBF_NET, "AmiSSLBase == NULL");
-
-    // if we weren't ale to initialize the TLS/SSL stuff we have to clear it
-    // before leaving
-    if(secure == FALSE)
     {
-      conn->ssl = NULL;
-      conn->error = CONNECTERR_SSLFAILED;
+      W(DBF_NET, "AmiSSLBase == NULL");
 
       // tell the user if secure connection are impossible due to AmiSSL being unavailable
       if(AmiSSLBase == NULL)
         ER_NewError(tr(MSG_ER_UNUSABLEAMISSL));
     }
+
+    if(secure == FALSE)
+      conn->error = CONNECTERR_SSLFAILED;
   }
 
   RETURN(secure);
@@ -1033,7 +1029,7 @@ BOOL InitSSLConnections(void)
 
   // try to open amisslmaster.library first
   if((AmiSSLMasterBase = OpenLibrary("amisslmaster.library", AMISSLMASTER_VERSION)) != NULL &&
-     /* LIB_VERSION_IS_AT_LEAST(AmiSSLMasterBase, AMISSLMASTER_VERSION, AMISSLMASTER_REVISION) && */
+     LIB_VERSION_IS_AT_LEAST(AmiSSLMasterBase, AMISSLMASTER_VERSION, AMISSLMASTER_REVISION) &&
      GETINTERFACE("main", 1, IAmiSSLMaster, AmiSSLMasterBase))
   {
     if(OpenAmiSSLTags(AMISSL_VERSION,
@@ -1046,8 +1042,6 @@ BOOL InitSSLConnections(void)
                       #endif
                       TAG_DONE) == 0) // 0 signals NO error
     {
-      char tmp[24+1];
-
       D(DBF_STARTUP, "successfully opened AmiSSL library %d.%d (%s)", AmiSSLBase->lib_Version, AmiSSLBase->lib_Revision, AmiSSLBase->lib_IdString);
 
       // initialize AmiSSL/OpenSSL related stuff that
@@ -1055,23 +1049,19 @@ BOOL InitSSLConnections(void)
       // own initializations
       OPENSSL_init_ssl(OPENSSL_INIT_SSL_DEFAULT, NULL); // Initialize OpenSSL's SSL libraries
 
-      // seed the random number generator with some valuable entropy
-      D(DBF_NET, "AmiSSL: seeding random number generator");
-      snprintf(tmp, sizeof(tmp), "%08lx%08lx%08lx", (unsigned long)time((time_t *)NULL), (unsigned long)FindTask(NULL), (unsigned long)rand());
-      RAND_seed(tmp, strlen(tmp));
-
       // 1) now we create a common SSL_CTX object which all our SSL connections will share
       if((G->sslCtx = SSL_CTX_new(TLS_client_method())) == NULL)
         E(DBF_NET, "AmiSSL: can't create SSL_CTX object!");
-      // 2) set minimum allowed protocol version to SSL3 (SSLv2 is deprecated/insecure)
-      else if(SSL_CTX_set_min_proto_version(G->sslCtx, SSL3_VERSION) == 0)
-        E(DBF_NET, "AmiSSL: couldn't set minimum protocol version to SSL3. SSL: %s", ERR_error_string(ERR_get_error(), NULL));
+      // 2) set minimum allowed protocol version to TLSv1.0 (SSLv2/SSLv3 is deprecated/insecure)
+      else if(SSL_CTX_set_min_proto_version(G->sslCtx, TLS1_VERSION) == 0)
+        E(DBF_NET, "AmiSSL: couldn't set minimum protocol version to TLS1. SSL: %s", ERR_error_string(ERR_get_error(), NULL));
       else
       {
         int rc = 0; // make sure set_default_verify_paths() is called
 
         D(DBF_NET, "AmiSSL: SSL ctx timeout: %ld s", SSL_CTX_get_timeout(G->sslCtx));
 
+        #if 0 // use AmiSSL's built-in certificate bundle - no need to feed it our own
         if(FileExists(DEFAULT_CAPATH) == TRUE)
         {
           D(DBF_NET, "AmiSSL: CAfile = '%s', CApath = '%s'", DEFAULT_CAFILE, DEFAULT_CAPATH);
@@ -1094,6 +1084,7 @@ BOOL InitSSLConnections(void)
         }
         else
           ER_NewError(tr(MSG_ER_WARN_CAPATH), DEFAULT_CAPATH);
+        #endif
 
         // 4) if no CA file or path is given we set the default pathes
         if(rc == 0 && (rc = SSL_CTX_set_default_verify_paths(G->sslCtx)) == 0)

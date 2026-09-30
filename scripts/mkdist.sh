@@ -3,7 +3,7 @@
 #
 # YAM - Yet Another Mailer
 # Copyright (C) 1995-2000 Marcel Beck
-# Copyright (C) 2000-2022 YAM Open Source Team
+# Copyright (C) 2000-2025 YAM Open Source Team
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # YAM Official Support Site :  http://www.yam.ch
-# YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
+# YAM OpenSource project    :  https://github.com/jens-maus/yam/
 #
 ############################################################################
 
@@ -30,7 +30,7 @@
 
 # check the first option
 case $1 in
-  release)     archtype="release"; compileflags="DEVFLAGS=";;
+  release)     archtype="release"; compileflags="DEVFLAGS=-D__YAM_DEVEL=";;
   nightly)     archtype="nightly"; compileflags="BUILDID=$(date +%Y%m%d)";;
   *)           echo "ERROR: '$1' option (archive type) unknown."; exit 2;;
 esac
@@ -55,11 +55,11 @@ yamver=$(grep "#define __YAM_VERSION" src/YAM_global.c | cut -d "\"" -f2)
 if [[ ${archtype} == "nightly" ]]; then
   # nightly build
   yamarcver="$(echo ${yamver} | tr -d ".")dev-$(date +%Y%m%d)"
-  yamdir="YAM${yamver}dev-$(date +%Y%m%d)"
+  yamdir="YAM ${yamver}dev-$(date +%Y%m%d)"
 else
   # release build
   yamarcver=$(echo ${yamver} | tr -d ".")
-  yamdir="YAM"
+  yamdir="YAM ${yamver}"
 fi
 
 # create a fresh archive directory
@@ -98,7 +98,7 @@ find ${distdir} -nowarn -name ".git" -or -name ".DS_Store" -exec rm -rf {} \; 2>
 echo "  MK YAM${yamarcver}-${yamarchive}-debug.lha"
 rm -f YAM${yamarcver}-${yamarchive}-debug.lha
 curdir=$(pwd)
-(cd ${distdir}; lha -ao5q "${curdir}/YAM${yamarcver}-${yamarchive}-debug.lha" *)
+(cd ${distdir}; lha a -o5q21 "${curdir}/YAM${yamarcver}-${yamarchive}-debug.lha" *)
 md5sum "YAM${yamarcver}-${yamarchive}-debug.lha" >"YAM${yamarcver}-${yamarchive}-debug.lha.md5"
 
 # remove the debug binaries again
@@ -125,12 +125,10 @@ cp -a dist/${yamsys}/* "${distdir}/"
 echo "  MK catalogs"
 make catalogs
 
-# in case this is a nightly build we have to rename the top-level dir and info icon
-if [[ ${archtype} == "nightly" ]]; then
-  rsync -a "${distdir}/YAM/" "${distdir}/${yamdir}/"
-  rm -rf "${distdir}/YAM"
-  mv "${distdir}/YAM.info" "${distdir}/${yamdir}.info"
-fi
+# Rename the top-level dir and info icon
+rsync -a "${distdir}/YAM/" "${distdir}/${yamdir}/"
+rm -rf "${distdir}/YAM"
+mv "${distdir}/YAM.info" "${distdir}/${yamdir}.info"
 
 # move the ChangeLog from the top-level dir to the Docs subdir.
 mv "${distdir}/${yamdir}/ChangeLog" "${distdir}/${yamdir}/Docs/"
@@ -154,11 +152,14 @@ cp -a src/YAM.${yamsys} "${distdir}/${yamdir}/YAM"
 # cleanup the archive directory from unwanted files
 find ${distdir} -nowarn -name ".git" -or -name ".DS_Store" -exec rm -rf {} \; 2>/dev/null
 
+# delete the certificate bundle, as we currently prefer to rely on AmiSSL's
+rm -r "${distdir}/${yamdir}/Resources/Certificates"*
+
 # lets generate the final lha archive
 echo "  MK YAM${yamarcver}-${yamarchive}.lha"
 rm -f YAM${yamarcver}-${yamarchive}.lha
 curdir=$(pwd)
-(cd ${distdir}; lha -ao5q "${curdir}/YAM${yamarcver}-${yamarchive}.lha" *)
+(cd ${distdir}; lha a -o5q21 "${curdir}/YAM${yamarcver}-${yamarchive}.lha" *)
 md5sum "YAM${yamarcver}-${yamarchive}.lha" >"YAM${yamarcver}-${yamarchive}.lha.md5"
 
 # remove the temporary dist directory

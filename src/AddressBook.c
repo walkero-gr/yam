@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -1736,7 +1734,7 @@ static void XMLEndHandler(void *userData, const XML_Char *name)
           }
           else
           {
-            char tmp[SIZE_DEFAULT];
+            char tmp[SIZE_DEFAULT-1];
 
             strlcpy(tmp, xmlUserData->abn.City, sizeof(tmp));
             snprintf(xmlUserData->abn.City, sizeof(xmlUserData->abn.City), "%s %s", isoStr, tmp);
@@ -2208,9 +2206,6 @@ void CheckABookBirthdays(const struct ABook *abook, BOOL check)
     nextDS.ds_Days++;
     DateStamp2TimeVal(&nextDS, &nextTV, TZC_NONE);
   }
-
-  // calculate the remaining time until the next check
-  SubTime(TIMEVAL(&nextTV), TIMEVAL(&nowTV));
 
   #if defined(DEBUG)
   {

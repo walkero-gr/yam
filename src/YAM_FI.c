@@ -2,7 +2,7 @@
 
  YAM - Yet Another Mailer
  Copyright (C) 1995-2000 Marcel Beck
- Copyright (C) 2000-2022 YAM Open Source Team
+ Copyright (C) 2000-2025 YAM Open Source Team
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  YAM Official Support Site :  http://www.yam.ch
- YAM OpenSource project    :  http://sourceforge.net/projects/yamos/
-
- $Id$
+ YAM OpenSource project    :  https://github.com/jens-maus/yam/
 
 ***************************************************************************/
 
@@ -770,7 +768,7 @@ BOOL FI_PrepareSearch(struct Search *search, const enum SearchMode mode,
         // we are told to perform AmigaDOS pattern matching
         if(isFlagSet(flags, SEARCHF_SUBSTRING) || mode == SM_HEADER || mode == SM_BODY || mode == SM_WHOLE || mode == SM_STATUS)
         {
-          char buffer[SIZE_PATTERN+1];
+          char buffer[SIZE_PATTERN];
 
           // if substring is selected lets generate a substring from
           // the current match string, but keep the string borders in mind.
@@ -1435,7 +1433,7 @@ BOOL ExecuteFilterAction(const struct FilterNode *filter, struct Mail *mail, str
   if(hasExecuteAction(filter) && *filter->executeCmd)
   {
     char mailfile[SIZE_PATHFILE];
-    char buf[SIZE_COMMAND + SIZE_PATHFILE];
+    char buf[SIZE_COMMAND + SIZE_PATHFILE + 3];
 
     GetMailFile(mailfile, sizeof(mailfile), NULL, mail);
     snprintf(buf, sizeof(buf), "%s \"%s\"", filter->executeCmd, mailfile);
